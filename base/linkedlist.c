@@ -132,6 +132,33 @@ int deleteNode(LinkedList *list, uint8_t *key, void (* cleanData)(void *))
     return 0;
 }
 
+ListNode *copyNode(ListNode *src, size_t key_len, size_t void_len)
+{
+    void *data = calloc(void_len, 1); 
+    memcpy(data, src->data, void_len);
+    return makeNode(data, src->key, key_len);
+}
+
+LinkedList *deepCopyList(LinkedList *src, size_t void_len)
+{
+    LinkedList *dst;
+    ListNode *node, *newnode;
+    
+    dst = initList(src->key_len);
+    if (src->head == NULL)
+        return dst;
+    dst->head = copyNode(src->head, src->key_len, void_len);
+    node = src->head->next;
+    newnode = dst->head;
+    while(node != NULL) {
+        newnode->next = copyNode(node, src->key_len, void_len); 
+        newnode->next->prev = newnode;
+        newnode = newnode->next;
+        node = node->next;
+    }
+    return dst; 
+}
+
 void destroyList(LinkedList **list, void(* cleanData)(void *))
 {
     ListNode *p, *temp;
@@ -147,9 +174,10 @@ void destroyList(LinkedList **list, void(* cleanData)(void *))
 
 void showKey(uint8_t* key, size_t key_len)
 {
-    int i;
-    for(i = 0; i < key_len; ++i)
-        printf("%2d ", key[i]); 
+    //int i;
+    // for(i = 0; i < key_len; ++i)
+        //printf("%2d ", key[i]); 
+    printf("%s ", key);
 }
 
 void dumpList(const LinkedList *list, void(* showData)(void *))

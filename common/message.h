@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON
+#ifndef MESSAGE_H 
+#define MESSAGE_H
 
 #include <stdint.h>
 #define MSGBODYSIZE (2<<13)

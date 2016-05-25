@@ -1,5 +1,5 @@
 #ifndef LINKEDLIST_H
-#define LINKEDLIST
+#define LINKEDLIST_H
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -27,5 +27,7 @@ ListNode* findNode(LinkedList *list, uint8_t *key);
 int deleteNode(LinkedList*, uint8_t*, void(*)(void*));
 void destroyList(LinkedList **list, void(*)(void*));
 int updateNode(LinkedList *, uint8_t *, void *, void(*)(void *));
+void dumpList(const LinkedList *list, void(*)(void *));
+LinkedList *deepCopyList(LinkedList*, size_t);
 
 #endif
