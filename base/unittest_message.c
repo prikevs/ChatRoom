@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void handle_in(uint8_t *body, uint32_t len)
+void handle_in(int sockfd, uint8_t *body, uint32_t len)
 {
     int i;
     printf("in handle_in\n"); 
@@ -13,7 +13,7 @@ void handle_in(uint8_t *body, uint32_t len)
     printf("\n");
 }
 
-void handle_out(uint8_t *body, uint32_t len)
+void handle_out(int sockfd, uint8_t *body, uint32_t len)
 {
     printf("in handle_out\n"); 
 }
@@ -31,6 +31,6 @@ int main()
     buf = (uint8_t *)&msg;
     registHandleFunc(MSG_in, handle_in, 0);
     registHandleFunc(MSG_out, handle_out, 0);
-    handleMsg(buf, len);
+    handleMsg(1, buf, len);
     return 0;
 }

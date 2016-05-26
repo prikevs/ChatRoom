@@ -47,10 +47,10 @@ int genMSG_list(uint8_t *buffer, uint32_t *len, LinkedList *list)
 int parseMSG_in(const uint8_t *msgbody, uint32_t msglen, char *room, uint32_t *len)
 {
     int i;
-    memset(room, 0, sizeof(char)*(*len)); 
+    memset(room, 0, sizeof(char)*MAXNLEN); 
     for(i = 0; i < msglen; ++i) {
         if (msgbody[i] == '\\') {
-            if (i > (*len)-1)
+            if (i > (MAXNLEN)-1)
                 return -1;
             strncpy(room, (char *)msgbody, i); 
             *len = i;
@@ -72,3 +72,30 @@ int genMSG_in(uint8_t *buffer, uint32_t *len, char *room)
     return 0;
 }
 
+int parseMSG_reg(const uint8_t *msgbody, uint32_t msglen, char *name, uint32_t *len)
+{
+    int i;
+    memset(name, 0, sizeof(char)*MAXNLEN); 
+    for(i = 0; i < msglen; ++i) {
+        if (msgbody[i] == '\\') {
+            if (i > (MAXNLEN-1)
+                return -1;
+            strncpy(name, (char *)msgbody, i); 
+            *len = i;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int genMSG_reg(uint8_t *buffer, uint32_t *len, char *room)
+{
+    int rlen;
+
+    rlen = strlen(room);
+    if (rlen > MSGBODYSIZE-1)
+        return -1;
+    sprintf((char *)buffer, "%s\\", room);
+    (*len) = rlen + 1;
+    return 0;
+}

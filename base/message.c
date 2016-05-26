@@ -7,7 +7,7 @@ static LinkedList *list;
 
 void cleanData(void *data) {}
 
-int registHandleFunc(int msgtype, void(*handle)(uint8_t*, uint32_t), int override)
+int registHandleFunc(int msgtype, void(*handle)(int, uint8_t*, uint32_t), int override)
 {
     uint8_t key[1];
 
@@ -25,7 +25,7 @@ int registHandleFunc(int msgtype, void(*handle)(uint8_t*, uint32_t), int overrid
     return 1;
 }
 
-void(*findProperHandler(int msgtype))(uint8_t *buf, uint32_t len)
+void(*findProperHandler(int msgtype))(int, uint8_t *buf, uint32_t len)
 {
     uint8_t key[1];
     key[0] = msgtype;
@@ -35,10 +35,10 @@ void(*findProperHandler(int msgtype))(uint8_t *buf, uint32_t len)
     return node->data;
 }
 
-int handleMsg(uint8_t *buf, uint32_t len) 
+int handleMsg(int sockfd, uint8_t *buf, uint32_t len)
 {
     Msg *msg;
-    void(* handler)(uint8_t*, uint32_t);
+    void(* handler)(int, uint8_t*, uint32_t);
 
     if (len <= MSGMINLEN)
         return -1;
@@ -57,6 +57,6 @@ int handleMsg(uint8_t *buf, uint32_t len)
     handler = findProperHandler(msg->msgtype);
     if (handler == NULL)
         return -1;
-    handler(msg->msgbody, msg->bodylen);
+    handler(sockfd, msg->msgbody, msg->bodylen);
     return 0;
 }

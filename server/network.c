@@ -63,29 +63,35 @@ void handle_accept(int epollfd, int listenfd)
     }
 }
 
-void do_read(int epollfd, int fd, char *buf)
+void do_read(int epollfd, int fd, void(* msgHandler)(int, int, char*, int))
 {
     int nread;
+    int status;
+    char *buf;
+
+    buf = (char *)calloc(BUFFSIZE, sizeof(char));
     nread = read(fd, buf, BUFFSIZE);
     if (nread == -1) {
         perror("read error:");
         close(fd);
         delete_event(epollfd, fd, EPOLLIN);
-        // Delete Client
+        status = STATUS_offline;
     }
     else if (nread == 0) {
         fprintf(stderr, "client close.\n");
         close(fd);
         delete_event(epollfd, fd, EPOLLIN);
-        // Delete Client
+        status = STATUS_offline;
     }
     else {
-        // handle buffer 
-        printf("buffer: %s\n", buf);
+        status = STATUS_handle;
+        // printf("buffer: %s\n", buf);
     }
+    // Do not forget to free buf
+    msgHandler(status, fd, buf, nread);
 }
 
-void handle_events(int epollfd, struct epoll_event *events, int num, int listenfd, char *buf)
+void handle_events(int epollfd, struct epoll_event *events, int num, int listenfd, void(* msgHandler)(int, int, char*, int))
 {
     int i;
     int fd;
@@ -100,43 +106,33 @@ void handle_events(int epollfd, struct epoll_event *events, int num, int listenf
         if ((fd == listenfd) && (events[i].events & EPOLLIN)) 
             handle_accept(epollfd, listenfd);
         else if (events[i].events & EPOLLIN)
-            do_read(epollfd, fd, buf);
+            do_read(epollfd, fd, msgHandler);
     }
 }
 
 
-void do_epoll(int listenfd)
+void do_epoll(int listenfd, void (* msgHandler)(int, int, char*, int))
 {
     int epollfd;
     struct epoll_event events[EPOLLEVENTS];
     int ret;
-    char buf[BUFFSIZE];
-    memset(buf, 0, sizeof(buf));
 
     epollfd = epoll_create(FDSIZE);
     add_event(epollfd, listenfd, EPOLLIN);
 
     for(;;) {
         ret = epoll_wait(epollfd, events, EPOLLEVENTS, -1); 
-        handle_events(epollfd, events, ret, listenfd, buf);
+        handle_events(epollfd, events, ret, listenfd, msgHandler);
     }
     close(epollfd);
 }
 
-int initNetwork(char *ip, int port)
+int initNetwork(const char *ip, const int port, void(* msgHandler)(int, int, char*, int))
 {
     int sockfd;
     sockfd = socket_bind(ip, port);
     listen(sockfd, LISTENQ);
-    do_epoll(sockfd);
+    do_epoll(sockfd, msgHandler);
     return 0;
 }
 
-int main()
-{
-    int sockfd;
-    sockfd = socket_bind("127.0.0.1", 9999);
-    listen(sockfd, LISTENQ);
-    do_epoll(sockfd);
-    return 0;
-}

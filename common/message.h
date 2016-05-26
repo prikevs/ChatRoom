@@ -27,7 +27,7 @@ typedef struct Msg {
     uint8_t msgbody[MSGBODYSIZE];
 } Msg;
 
-int registHandleFunc(int, void(*)(uint8_t*, uint32_t), int);
-int handleMsg(uint8_t*, uint32_t);
+int registHandleFunc(int, void(*)(int, uint8_t*, uint32_t), int);
+int handleMsg(int, uint8_t*, uint32_t);
 
 #endif

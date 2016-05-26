@@ -57,6 +57,9 @@ int addClientToList(int sockfd, User *user, char *session)
     int ret;
 
     ENTRY();
+    if (findNode(clientlist, (uint8_t *)user->name) != NULL) {
+        EXIT(-1); 
+    }
     ret = addNodeToList(clientlist, makeNode((void *)makeClient(sockfd, user, session), (uint8_t *)user->name, clientlist->key_len));
     EXIT(ret);
 }
