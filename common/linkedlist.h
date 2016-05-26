@@ -25,6 +25,7 @@ int addNodeToList(LinkedList*, ListNode*);
 void cleanNode(ListNode**, void(*)(void*));
 ListNode* findNode(LinkedList *list, uint8_t *key);
 int deleteNode(LinkedList*, uint8_t*, void(*)(void*));
+int deleteNodeByNode(LinkedList*, ListNode*, void(*)(void *));
 void destroyList(LinkedList **list, void(*)(void*));
 int updateNode(LinkedList *, uint8_t *, void *, void(*)(void *));
 void dumpList(const LinkedList *list, void(*)(void *));

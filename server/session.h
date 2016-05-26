@@ -7,9 +7,10 @@
 typedef struct Session {
     LinkedList *clientlist;
     int count;
+    char name[MAXNLEN];
 } Session;
 
-void initSessionList();
+int initSessionList();
 int addUserToSession(char*, char*);
 int delUserFromSession(char*, char*);
 void dumpSessionList();

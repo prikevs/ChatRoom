@@ -1,15 +1,27 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "common.h"
 #include "session.h"
 
-static LinkedList *sessionlist;
+#define ENTRY() pthread_mutex_lock(&lock)
+#define EXIT(ret) pthread_mutex_unlock(&lock); return ret
 
-void initSessionList()
+static LinkedList *sessionlist;
+static pthread_mutex_t lock;
+
+int initSessionList()
 {
-    if (sessionlist == NULL)
+    if (sessionlist == NULL) {
         sessionlist = initList(MAXNLEN);
+        if (sessionlist == NULL)
+            return -2;
+    }
+    if (pthread_mutex_init(&lock, NULL) != 0)
+        return -1;
+    return 0;
 }
 
 ListNode *findSession(char *se)
@@ -28,7 +40,17 @@ Session *makeSession(char *se)
     session = (Session *)calloc(1, sizeof(Session));
     session->clientlist = initList(MAXNLEN);
     session->count = 0;
+    strncpy(session->name, se, MIN(MAXNLEN-1,strlen(se)));
     return session;
+}
+
+User *makeUser(char *name)
+{
+    User *user;
+    
+    user = (User *)calloc(1, sizeof(User)); 
+    strcpy(user->name, name);
+    return user;
 }
 
 int addUserToSession(char *user, char *se)
@@ -36,29 +58,34 @@ int addUserToSession(char *user, char *se)
     ListNode *session;
     LinkedList *clientlist;
     Session *senode;
+    User *suser;
 
     // lock
+    ENTRY();
     session = findSession(se); 
     if (session == NULL) {
         senode = makeSession(se);
         addNodeToList(sessionlist, makeNode((void *)senode, (uint8_t *)se, sessionlist->key_len));
     }
-    else
+    else {
         senode = (Session *)(session->data);
+    }
     clientlist = senode->clientlist;
     if (findClient(clientlist, user) != NULL) {
         // unlock
-        return -1;
+        EXIT(-1);
     }
-    addNodeToList(clientlist, makeNode(NULL, (uint8_t*)user, clientlist->key_len));
+
+    suser = makeUser(user);
+    addNodeToList(clientlist, makeNode((void *)suser, (uint8_t*)user, clientlist->key_len));
     senode->count++;
     // unlock
-    return 0;
+    EXIT(0);
 }
 
 static void cleanClient(void *data)
 {
-    
+    free(data); 
 }
 
 static void cleanSession(void *data)
@@ -79,22 +106,23 @@ int delUserFromSession(char *user, char *se)
     Session *senode;
 
     // lock
+    ENTRY();
     session = findSession(se);
     if (session == NULL) {
         // unlock
-        return -1;
+        EXIT(-1);
     }
     senode = (Session *)(session->data);
     clientlist = senode->clientlist;
     if (deleteNode(clientlist, (uint8_t *)user, cleanClient) != 0) {
         // unlock
-        return -1;
+        EXIT(-1);
     }
     senode->count--; 
     if (senode->count == 0)
         delSession(se);             
     // unlock
-    return 0;
+    EXIT(0);
 }
 
 LinkedList *getUsersFromSession(char *se)
@@ -104,20 +132,23 @@ LinkedList *getUsersFromSession(char *se)
     Session *senode;
 
     // lock
+    ENTRY();
     session = findSession(se); 
     if (session == NULL) {
-        return NULL;
         // unlock
+        EXIT(NULL);
     }
     senode = (Session *)(session->data);
     clientlist = senode->clientlist;
     ret = deepCopyList(clientlist, 0);
     // unlock
-    return ret;
+    EXIT(ret);
 }
 
 static void showClient(void *data)
-{}
+{
+    printf("%s", ((User *)data)->name);
+}
 
 static void showSession(void *data)
 {

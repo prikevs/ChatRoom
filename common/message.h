@@ -2,9 +2,10 @@
 #define MESSAGE_H
 
 #include <stdint.h>
-#define MSGBODYSIZE (2<<13)
+#define MSGBODYSIZE (1<<10)
 #define MSGMINLEN (4+4)
 #define MSGSIZE (MSGBODYSIZE+4+4)
+#define BUFFSIZE (MSGSIZE+4)
 
 // MSG_reg:  register on the server
 // MSG_in:   MSG_in |room name, end with '/'

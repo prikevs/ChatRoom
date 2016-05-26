@@ -89,8 +89,9 @@ ListNode *findNode(LinkedList *list, uint8_t *key)
 {
     ListNode *p;
     
-    if (list->head == NULL)
-        NULL;
+    if (list->head == NULL) {
+        return NULL;
+    }
     p = list->head;
     while(p != NULL && compareKey(p->key, key, list->key_len) < 0)
         p = p->next;
@@ -110,14 +111,8 @@ int updateNode(LinkedList *list, uint8_t *key, void *data, void(* cleanData)(voi
     return 0;
 }
 
-int deleteNode(LinkedList *list, uint8_t *key, void (* cleanData)(void *))
+int deleteNodeByNode(LinkedList *list, ListNode *p, void(* cleanData)(void *))
 {
-    ListNode *p;
-
-    p = findNode(list, key);
-    if (p == NULL)
-        return -1;
-
     if (p == list->head) {
         list->head = p->next; 
         if (p->next != NULL)
@@ -131,6 +126,18 @@ int deleteNode(LinkedList *list, uint8_t *key, void (* cleanData)(void *))
     cleanNode(&p, cleanData);
     return 0;
 }
+
+int deleteNode(LinkedList *list, uint8_t *key, void(* cleanData)(void *))
+{
+    ListNode *p;
+
+    p = findNode(list, key);
+    if (p == NULL)
+        return -1;
+
+    return deleteNodeByNode(list, p, cleanData);
+}
+
 
 ListNode *copyNode(ListNode *src, size_t key_len, size_t void_len)
 {
