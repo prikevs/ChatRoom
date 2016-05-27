@@ -53,6 +53,7 @@ int parseMSG_in(const uint8_t *msgbody, uint32_t msglen, char *room, uint32_t *l
             if (i > (MAXNLEN)-1)
                 return -1;
             strncpy(room, (char *)msgbody, i); 
+            // printf("room: %s\n", room);
             *len = i;
             return 0;
         }
@@ -78,7 +79,7 @@ int parseMSG_reg(const uint8_t *msgbody, uint32_t msglen, char *name, uint32_t *
     memset(name, 0, sizeof(char)*MAXNLEN); 
     for(i = 0; i < msglen; ++i) {
         if (msgbody[i] == '\\') {
-            if (i > (MAXNLEN-1)
+            if (i > (MAXNLEN-1))
                 return -1;
             strncpy(name, (char *)msgbody, i); 
             *len = i;
@@ -87,6 +88,7 @@ int parseMSG_reg(const uint8_t *msgbody, uint32_t msglen, char *name, uint32_t *
     }
     return -1;
 }
+
 
 int genMSG_reg(uint8_t *buffer, uint32_t *len, char *room)
 {
@@ -99,3 +101,18 @@ int genMSG_reg(uint8_t *buffer, uint32_t *len, char *room)
     (*len) = rlen + 1;
     return 0;
 }
+
+int genMSG_ret(uint8_t *buffer, uint32_t *len, int success, const char *hint)
+{
+    printf("gen ret\n");
+    if (success == 1)
+        sprintf((char *)buffer, "success\\"); 
+    else
+        sprintf((char *)buffer, "failed\\");
+    if (hint != NULL)
+        sprintf((char *)(buffer+strlen((char *)buffer)), "%s\\", hint);
+    printf("ret: %s\n", (char *)buffer);
+    *len = strlen((char *)buffer);
+    return 0;
+}
+

@@ -10,7 +10,7 @@ typedef struct ThreadArg {
 
 
 int outOfRoom(char*);
-int getIntoRoom(char*, char*);
+int getIntoRoom(int, char*, char*);
 int reg(char*, int sockfd);
 int unRegByName(char*);
 int unRegBySockfd(int sockfd);

@@ -9,15 +9,28 @@
 int init()
 {
     if (initClientList() != 0) {
-        fprintf(stderr, "Failed to init client list");
+        fprintf(stderr, "Failed to init client list\n");
         return -1;
     }
     if (initSessionList() != 0) {
-        fprintf(stderr, "Failed to init session list");
+        fprintf(stderr, "Failed to init session list\n");
         return -1;
     }
     if (registHandleFuncs() != 0) {
-        fprintf(stderr, "Failed to regist msg handlers");
+        fprintf(stderr, "Failed to regist msg handlers\n");
         return -1;
     }
+    return 0;
+}
+
+int main()
+{
+    char *ip = "127.0.0.1";
+    int port = 9999;
+
+    if (init() != 0) {
+        fprintf(stderr, "Failed to init.\n");
+    }
+    startNetwork(ip, port, msgHandler); 
+    return 0;
 }

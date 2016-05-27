@@ -44,16 +44,17 @@ Session *makeSession(char *se)
     return session;
 }
 
-User *makeUser(char *name)
+User *makeUser(int sockfd, char *name)
 {
     User *user;
     
     user = (User *)calloc(1, sizeof(User)); 
     strcpy(user->name, name);
+    user->sockfd = sockfd;
     return user;
 }
 
-int addUserToSession(char *user, char *se)
+int addUserToSession(int sockfd, char *name, char *se)
 {
     ListNode *session;
     LinkedList *clientlist;
@@ -71,13 +72,13 @@ int addUserToSession(char *user, char *se)
         senode = (Session *)(session->data);
     }
     clientlist = senode->clientlist;
-    if (findClient(clientlist, user) != NULL) {
+    if (findClient(clientlist, name) != NULL) {
         // unlock
         EXIT(-1);
     }
 
-    suser = makeUser(user);
-    addNodeToList(clientlist, makeNode((void *)suser, (uint8_t*)user, clientlist->key_len));
+    suser = makeUser(sockfd, name);
+    addNodeToList(clientlist, makeNode((void *)suser, (uint8_t*)name, clientlist->key_len));
     senode->count++;
     // unlock
     EXIT(0);
@@ -97,6 +98,11 @@ static void cleanSession(void *data)
 int delSession(char *se)
 {
     return deleteNode(sessionlist, (uint8_t *)se, cleanSession);
+}
+
+void destroyClientListInSession(LinkedList *list)
+{
+    destroyList(&list, cleanClient);
 }
 
 int delUserFromSession(char *user, char *se)
@@ -140,7 +146,7 @@ LinkedList *getUsersFromSession(char *se)
     }
     senode = (Session *)(session->data);
     clientlist = senode->clientlist;
-    ret = deepCopyList(clientlist, 0);
+    ret = deepCopyList(clientlist, sizeof(User));
     // unlock
     EXIT(ret);
 }

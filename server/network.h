@@ -8,6 +8,8 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
+#include "common.h"
+
 #define EPOLLEVENTS 100
 #define FDSIZE 1000
 #define LISTENQ 5
@@ -17,6 +19,6 @@ enum statusType{
     STATUS_handle, 
 };
 
-int initNetwork(const char*, const int, void(*)(int, int,char*,int));
+int startNetwork(const char*, const int, void(*)(int, int,char*,int));
 
 #endif

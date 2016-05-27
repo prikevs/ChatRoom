@@ -21,19 +21,21 @@ static void delete_event(int epollfd, int fd, int state)
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 }
 
-static void modify_event(int epollfd, int fd, int state)
-{
-    struct epoll_event ev;
-    ev.events = state;
-    ev.data.fd = fd;
-    epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
-}
+// static void modify_event(int epollfd, int fd, int state)
+// {
+//    struct epoll_event ev;
+//    ev.events = state;
+//    ev.data.fd = fd;
+//    epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
+// }
 
 int socket_bind(const char *ip, int port)
 {
-    int listenfd;
+    int listenfd, optval;
     struct sockaddr_in servaddr;
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    optval = 1;
+    setsockopt(listenfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
     if (listenfd == -1) {
         perror("socket error:"); 
         exit(1);
@@ -54,6 +56,7 @@ void handle_accept(int epollfd, int listenfd)
     int clifd;
     struct sockaddr_in cliaddr;
     socklen_t cliaddrlen;
+    cliaddrlen = sizeof(cliaddr);
     clifd = accept(listenfd, (struct sockaddr*)&cliaddr, &cliaddrlen);
     if (clifd == -1)
         perror("accept error:");
@@ -98,11 +101,12 @@ void handle_events(int epollfd, struct epoll_event *events, int num, int listenf
     for(i = 0; i < num; ++i) {
         fd = events[i].data.fd;
         
-        if (events[i].events & EPOLLERR || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))) {
-            perror("epoll error");
-            close(events[i].data.fd);
-            continue;
-        }
+        // if (events[i].events & EPOLLERR || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))) {
+           // perror("epoll error");
+            // close(events[i].data.fd);
+            // delete_event(epollfd, events[i].data.fd, EPOLLIN);
+           // continue;
+        // }
         if ((fd == listenfd) && (events[i].events & EPOLLIN)) 
             handle_accept(epollfd, listenfd);
         else if (events[i].events & EPOLLIN)
@@ -127,7 +131,7 @@ void do_epoll(int listenfd, void (* msgHandler)(int, int, char*, int))
     close(epollfd);
 }
 
-int initNetwork(const char *ip, const int port, void(* msgHandler)(int, int, char*, int))
+int startNetwork(const char *ip, const int port, void(* msgHandler)(int, int, char*, int))
 {
     int sockfd;
     sockfd = socket_bind(ip, port);

@@ -11,8 +11,10 @@ typedef struct Session {
 } Session;
 
 int initSessionList();
-int addUserToSession(char*, char*);
+int addUserToSession(int, char*, char*);
 int delUserFromSession(char*, char*);
+LinkedList *getUsersFromSession(char*);
+void destroyClientListInSession(LinkedList*);
 void dumpSessionList();
 
 

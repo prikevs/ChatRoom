@@ -102,7 +102,7 @@ int getClientSessionName(char *name, char *buf)
         EXIT(-2); 
     }
     memcpy(buf, ((Client *)(clinode->data))->sessionname, MAXNLEN);
-    return 0;
+    EXIT(0);
 }
 
 int getClientNameBySockfd(int sockfd, char *buf)
@@ -110,10 +110,11 @@ int getClientNameBySockfd(int sockfd, char *buf)
     ListNode *clinode;
     ENTRY();
     clinode = findClientBySockfd(sockfd);
-    if (clinode == NULL)
-        return -1;
+    if (clinode == NULL) {
+        EXIT(-1);
+    }
     strncpy(buf, ((Client *)(clinode->data))->user.name, MAXNLEN-1);
-    return 0;
+    EXIT(0);
 }
 
 int modifySessionOfClient(char *name, char *session)
