@@ -7,6 +7,7 @@ static LinkedList *list;
 
 void cleanData(void *data) {}
 
+// 注册消息处理函数
 int registHandleFunc(int msgtype, void(*handle)(int, Msg*), int override)
 {
     uint8_t key[1];
@@ -25,6 +26,7 @@ int registHandleFunc(int msgtype, void(*handle)(int, Msg*), int override)
     return 0;
 }
 
+// 寻找适当的处理函数
 void(*findProperHandler(int msgtype))(int, Msg*)
 {
     uint8_t key[1];
@@ -35,6 +37,7 @@ void(*findProperHandler(int msgtype))(int, Msg*)
     return node->data;
 }
 
+// 消息处理函数主入口
 int handleMsg(int sockfd, uint8_t *buf, int len)
 {
     Msg *msg;

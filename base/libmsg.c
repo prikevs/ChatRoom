@@ -4,6 +4,7 @@
 
 #include "common.h"
 
+// 解析MSG_list信息，传入解码前的字符流，输出解码后的链表结构
 LinkedList *parseMSG_list(const uint8_t *msgbody, uint32_t msglen)
 {
     int i, f;
@@ -26,6 +27,7 @@ LinkedList *parseMSG_list(const uint8_t *msgbody, uint32_t msglen)
     return userlist;
 }
 
+// 根据给定的链表生成对应的字符流用于网络传输
 int genMSG_list(uint8_t *buffer, uint32_t *len, LinkedList *list)
 {
     ListNode *node;

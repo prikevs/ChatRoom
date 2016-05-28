@@ -6,6 +6,7 @@
 
 #include "linkedlist.h"
 
+// 回调函数，用来判断ListNode 的key值大小
 static int compareKey(uint8_t *key_a, uint8_t *key_b, size_t key_len)
 {
     size_t i;
@@ -18,6 +19,7 @@ static int compareKey(uint8_t *key_a, uint8_t *key_b, size_t key_len)
     return 0;
 }
 
+// 根据传入的参数创建一个ListNode
 ListNode *makeNode(void *data, uint8_t *key, size_t key_len)
 {
     ListNode *node;
@@ -32,6 +34,7 @@ ListNode *makeNode(void *data, uint8_t *key, size_t key_len)
     return node;
 }
 
+// 初始化链表
 LinkedList* initList(size_t key_len)
 {
     LinkedList *list;
@@ -42,6 +45,7 @@ LinkedList* initList(size_t key_len)
     return list;
 }
 
+// 将一个节点加入链表
 int addNodeToList(LinkedList *list, ListNode *node)
 {
     ListNode *p, *prev;
@@ -78,6 +82,7 @@ int addNodeToList(LinkedList *list, ListNode *node)
     return 0;
 }
 
+// 清除一个节点
 void cleanNode(ListNode **node, void (* cleanData)(void *))
 {
     cleanData((*node)->data);
@@ -85,6 +90,7 @@ void cleanNode(ListNode **node, void (* cleanData)(void *))
     free(*node);
 }
 
+// 寻找一个节点
 ListNode *findNode(LinkedList *list, uint8_t *key)
 {
     ListNode *p;
@@ -100,6 +106,7 @@ ListNode *findNode(LinkedList *list, uint8_t *key)
     return p;
 }
 
+// 更新一个节点
 int updateNode(LinkedList *list, uint8_t *key, void *data, void(* cleanData)(void *))
 {
     ListNode *p;
@@ -111,6 +118,7 @@ int updateNode(LinkedList *list, uint8_t *key, void *data, void(* cleanData)(voi
     return 0;
 }
 
+// 根据传入的节点指针从链表中删除对应节点
 int deleteNodeByNode(LinkedList *list, ListNode *p, void(* cleanData)(void *))
 {
     if (p == list->head) {
@@ -127,6 +135,7 @@ int deleteNodeByNode(LinkedList *list, ListNode *p, void(* cleanData)(void *))
     return 0;
 }
 
+// 根据该节点的Key删除某节点
 int deleteNode(LinkedList *list, uint8_t *key, void(* cleanData)(void *))
 {
     ListNode *p;
@@ -138,7 +147,7 @@ int deleteNode(LinkedList *list, uint8_t *key, void(* cleanData)(void *))
     return deleteNodeByNode(list, p, cleanData);
 }
 
-
+// 深度复制某个节点
 ListNode *copyNode(ListNode *src, size_t key_len, size_t void_len)
 {
     void *data = calloc(void_len, 1); 
@@ -146,6 +155,7 @@ ListNode *copyNode(ListNode *src, size_t key_len, size_t void_len)
     return makeNode(data, src->key, key_len);
 }
 
+// 深度复制某个链表
 LinkedList *deepCopyList(LinkedList *src, size_t void_len)
 {
     LinkedList *dst;
@@ -166,6 +176,7 @@ LinkedList *deepCopyList(LinkedList *src, size_t void_len)
     return dst; 
 }
 
+// 删除某个链表并释放所有资源
 void destroyList(LinkedList **list, void(* cleanData)(void *))
 {
     ListNode *p, *temp;
@@ -179,6 +190,7 @@ void destroyList(LinkedList **list, void(* cleanData)(void *))
     *list = NULL; 
 }
 
+// 打印Key，调试用
 void showKey(uint8_t* key, size_t key_len)
 {
     //int i;
@@ -187,6 +199,7 @@ void showKey(uint8_t* key, size_t key_len)
     printf("%s ", key);
 }
 
+// 显示整个链表
 void dumpList(const LinkedList *list, void(* showData)(void *))
 {
     const ListNode *node;

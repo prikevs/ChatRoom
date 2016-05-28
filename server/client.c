@@ -14,6 +14,7 @@
 static LinkedList *clientlist;
 static pthread_mutex_t lock;
 
+// 初始化客户端列表
 int initClientList()
 {
     if (clientlist == NULL) {
@@ -26,6 +27,7 @@ int initClientList()
     return 0;
 }
 
+// 根据sockfd寻找对应Client节点
 ListNode *findClientBySockfd(int sockfd)
 {
     ListNode *p;
@@ -39,6 +41,7 @@ ListNode *findClientBySockfd(int sockfd)
     return NULL;
 }
 
+// 根据传入的参数生成一个Client节点
 Client *makeClient(int sockfd, User *user, char *session)
 {
     Client *client;
@@ -52,6 +55,7 @@ Client *makeClient(int sockfd, User *user, char *session)
     return client;
 }
 
+// 将一个Client节点加入Client链表
 int addClientToList(int sockfd, User *user, char *session)
 {
     int ret;
@@ -69,6 +73,7 @@ void cleanClient(void *data)
     free(data);
 }
 
+// 根据名字从链表中删除某个节点
 int delClientFromListByName(char *name)
 {
     int ret;
@@ -77,6 +82,7 @@ int delClientFromListByName(char *name)
     EXIT(ret);
 }
 
+// 根据sockfd从链表中删除某个节点
 int delClientFromListBySockfd(int sockfd)
 {
     ListNode *node;
@@ -90,6 +96,7 @@ int delClientFromListBySockfd(int sockfd)
     EXIT(ret);
 }
 
+// 获取Client所属的Session名
 int getClientSessionName(char *name, char *buf)
 {
     ListNode *clinode;
@@ -105,6 +112,7 @@ int getClientSessionName(char *name, char *buf)
     EXIT(0);
 }
 
+// 根据sockfd获取对应client的名字
 int getClientNameBySockfd(int sockfd, char *buf)
 {
     ListNode *clinode;
@@ -117,6 +125,7 @@ int getClientNameBySockfd(int sockfd, char *buf)
     EXIT(0);
 }
 
+// 修改某个Client的session名
 int modifySessionOfClient(char *name, char *session)
 {
     ListNode *clinode;

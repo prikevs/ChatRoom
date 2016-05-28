@@ -12,6 +12,7 @@
 static LinkedList *sessionlist;
 static pthread_mutex_t lock;
 
+// 初始化Sesion列表
 int initSessionList()
 {
     if (sessionlist == NULL) {
@@ -24,6 +25,7 @@ int initSessionList()
     return 0;
 }
 
+// 根据session名查找某个session节点
 ListNode *findSession(char *se)
 {
     return findNode(sessionlist, (uint8_t *)se);
@@ -54,6 +56,7 @@ User *makeUser(int sockfd, char *name)
     return user;
 }
 
+// 将某个user加入某个session，如果不存在对应Session就自动创建一个
 int addUserToSession(int sockfd, char *name, char *se)
 {
     ListNode *session;
@@ -95,6 +98,7 @@ static void cleanSession(void *data)
     destroyList(&(session->clientlist), cleanClient);
 }
 
+// 根据session名删除某个session
 int delSession(char *se)
 {
     return deleteNode(sessionlist, (uint8_t *)se, cleanSession);
@@ -105,6 +109,7 @@ void destroyClientListInSession(LinkedList *list)
     destroyList(&list, cleanClient);
 }
 
+// 将某个用户从某个session中删除
 int delUserFromSession(char *user, char *se)
 {
     ListNode *session;
@@ -131,6 +136,7 @@ int delUserFromSession(char *user, char *se)
     EXIT(0);
 }
 
+// 从session中根据session名获取对应session中所有的用户，并用链表返回
 LinkedList *getUsersFromSession(char *se)
 {
     ListNode *session;
