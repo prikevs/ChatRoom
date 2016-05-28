@@ -19,6 +19,6 @@ enum statusType{
     STATUS_handle, 
 };
 
-int startNetwork(const char*, const int, void(*)(int, int,char*,int));
+int startNetwork(const char*, const int, void(*)(int, int, char*,int));
 
 #endif

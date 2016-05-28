@@ -70,10 +70,11 @@ void do_read(int epollfd, int fd, void(* msgHandler)(int, int, char*, int))
 {
     int nread;
     int status;
-    char *buf;
+    char buf[BUFFSIZE];
 
-    buf = (char *)calloc(BUFFSIZE, sizeof(char));
-    nread = read(fd, buf, BUFFSIZE);
+    memset(buf, 0, sizeof(buf));
+    nread = recv(fd, buf, MSGSIZE, MSG_WAITALL);
+    printf("nread=%d\n", nread);
     if (nread == -1) {
         perror("read error:");
         close(fd);

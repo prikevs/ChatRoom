@@ -7,4 +7,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+int initNetwork(const char*, const int);
+void startReadBuffer(int);
+
 #endif

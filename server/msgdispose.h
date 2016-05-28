@@ -5,7 +5,7 @@ typedef struct ThreadArg {
     int status;
     int sockfd;
     int len;
-    char *buf;
+    char buf[BUFFSIZE];
 } ThreadArg;
 
 

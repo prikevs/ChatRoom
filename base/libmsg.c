@@ -61,7 +61,7 @@ int parseMSG_in(const uint8_t *msgbody, uint32_t msglen, char *room, uint32_t *l
     return -1;
 }
 
-int genMSG_in(uint8_t *buffer, uint32_t *len, char *room)
+int genMSG_in(uint8_t *buffer, uint32_t *len, const char *room)
 {
     int rlen;
 
@@ -90,14 +90,14 @@ int parseMSG_reg(const uint8_t *msgbody, uint32_t msglen, char *name, uint32_t *
 }
 
 
-int genMSG_reg(uint8_t *buffer, uint32_t *len, char *room)
+int genMSG_reg(uint8_t *buffer, uint32_t *len, const char *name)
 {
     int rlen;
 
-    rlen = strlen(room);
+    rlen = strlen(name);
     if (rlen > MSGBODYSIZE-1)
         return -1;
-    sprintf((char *)buffer, "%s\\", room);
+    sprintf((char *)buffer, "%s\\", name);
     (*len) = rlen + 1;
     return 0;
 }

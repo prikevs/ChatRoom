@@ -239,7 +239,6 @@ static void *msgHandle_thread(void *data)
         }
     } while(0);
     printf("%s\n", args->buf);
-    free(args->buf);
     return ((void *)0);
 }
 
@@ -252,7 +251,7 @@ void msgHandler(int status, int sockfd, char *buf, int len)
     args.status = status;
     args.sockfd = sockfd;
     args.len = len;
-    args.buf = buf;
+    memcpy(args.buf, buf, BUFFSIZE*sizeof(char));
     err = pthread_create(&main_tid, NULL, msgHandle_thread, (void *)(&args));
     if (err != 0) {
         perror("handle message, create thread:"); 

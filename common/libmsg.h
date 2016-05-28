@@ -14,9 +14,9 @@ LinkedList *parseMSG_list(const uint8_t *, uint32_t);
 int genMSG_list(uint8_t*, uint32_t *, LinkedList *);
 
 int parseMSG_in(const uint8_t*, uint32_t, char*, uint32_t*);
-int genMSG_in(uint8_t*, uint32_t*, char*);
+int genMSG_in(uint8_t*, uint32_t*, const char*);
 int parseMSG_reg(const uint8_t*, uint32_t, char*, uint32_t*);
-int genMSG_reg(uint8_t*, uint32_t*, char*);
+int genMSG_reg(uint8_t*, uint32_t*, const char*);
 int genMSG_ret(uint8_t*, uint32_t*, int, const char*);
 
 #endif
