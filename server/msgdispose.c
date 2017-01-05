@@ -252,9 +252,10 @@ void msgHandler(int status, int sockfd, char *buf, int len)
     args.sockfd = sockfd;
     args.len = len;
     memcpy(args.buf, buf, BUFFSIZE*sizeof(char));
-    err = pthread_create(&main_tid, NULL, msgHandle_thread, (void *)(&args));
-    if (err != 0) {
-        perror("handle message, create thread:"); 
-        sendMsgRetFailed(sockfd, "Service unavilable."); 
-    }
+    msgHandle_thread((void *)(&args)); 
+    // err = pthread_create(&main_tid, NULL, msgHandle_thread, (void *)(&args));
+    // if (err != 0) {
+    //    perror("handle message, create thread:"); 
+    //     sendMsgRetFailed(sockfd, "Service unavilable."); 
+    //}
 }

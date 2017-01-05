@@ -8,8 +8,10 @@
 #include "session.h"
 #include "client.h"
 
-#define ENTRY() pthread_mutex_lock(&lock)
-#define EXIT(ret) pthread_mutex_unlock(&lock); return ret
+// #define ENTRY() pthread_mutex_lock(&lock)
+// #define EXIT(ret) pthread_mutex_unlock(&lock); return ret
+#define ENTRY() ;
+#define EXIT(ret) return ret
 
 static LinkedList *clientlist;
 static pthread_mutex_t lock;
@@ -22,8 +24,9 @@ int initClientList()
         if (clientlist == NULL)
             return -1;
     }
-    if (pthread_mutex_init(&lock, NULL) != 0)
+    /*if (pthread_mutex_init(&lock, NULL) != 0)
         return -1;
+    */
     return 0;
 }
 

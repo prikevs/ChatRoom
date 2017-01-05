@@ -25,7 +25,7 @@ int init()
 
 int main()
 {
-    char *ip = "127.0.0.1";
+    char *ip = "0.0.0.0";
     int port = 9999;
 
     if (init() != 0) {
