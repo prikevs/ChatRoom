@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <stdio.h>
+#include <unistd.h>
 
 static void handleMSG_msg(int sockfd, Msg *msg)
 {
@@ -12,6 +13,7 @@ int registHandleFuncs()
 {
     if (registHandleFunc(MSG_msg, handleMSG_msg, 0) != 0)
         return -1;
+    return 0;
 }
 
 void handleBuffer(int sockfd, char *buf, int len)

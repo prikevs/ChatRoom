@@ -1,5 +1,5 @@
 #ifndef MSGHANDLER_H
-#define SMGHANDLER_H
+#define MSGHANDLER_H
 
 int registHandleFuncs();
 void handleBuffer(int, char*, int);
