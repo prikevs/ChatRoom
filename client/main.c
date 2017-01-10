@@ -3,16 +3,52 @@
 
 #include "common.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 
 int sockfd;
 
-int init(char *ip, int port) {
+void in_room(const char *room) {
+    if (inRoom(sockfd, room) < 0) {
+        fprintf(stderr, "Failed to get into room.\n");
+    }
+}
+
+void chat(const char *msg) {
+    if (sendMsgMsg(sockfd, msg) < 0) {
+        fprintf(stderr, "Failed to send room.\n");
+    }
+}
+
+
+void cmdline() {
+    int ch;
+    char room[128], msg[128];
+    while (1) {
+        printf("1.in session\n2.chat\n");
+        scanf("%d", &ch);
+        switch(ch) {
+        case 1:
+            printf("room name:");
+            scanf("%s", room);
+            in_room(room);
+            break;
+        case 2:
+            printf("chat:");
+            scanf("%s", msg);
+            chat(msg);
+            break;
+        }
+    }
+}
+
+
+int init(const char *ip, int port) {
     if (registHandleFuncs() < 0)
         return -1;
     sockfd = initNetwork(ip, port);
     if (sockfd < 0) {
-        return -1
+        return -1;
     }
     return 0;
 }
@@ -21,26 +57,20 @@ void start() {
     char name[MAXNLEN];
     printf("Input your name: ");
     scanf("%s", name);
-    if (reg(socfd, name) < 0) {
-        fprintf(stderr, "Failed to register, exit.");
+    if (reg(sockfd, name) < 0) {
+        fprintf(stderr, "Failed to register, exit.\n");
         return;
     }
-    loop();
-}
-
-void in_room(char *room) {
-    if (inRoom(sockfd, room) < 0) {
-        fprintf(stderr, "Failed to get into room.");
+    int pid = fork();
+    if (pid < 0) {
+        fprintf(stderr, "failed to fork, exit.\n");
+        return;
     }
-}
-
-
-int round() {
-    
-}
-
-void loop() {
-    
+    if (pid == 0) {
+        cmdline();
+    } else {
+        startReadBuffer(sockfd);
+    }
 }
 
 
@@ -48,9 +78,10 @@ int main()
 {
     const char *ip = "118.193.207.78";
     const int port = 9999;
-    reg(sockfd, "hui");
-    //sleep(1);
-    inRoom(sockfd, "room1");
-    startReadBuffer(sockfd);
+    if (init(ip, port) < 0) {
+        fprintf(stderr, "failed to init network. exit\n"); 
+        return -1;
+    }
+    start();
     return 0;
 }

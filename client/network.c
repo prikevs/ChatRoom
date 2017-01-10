@@ -34,7 +34,6 @@ void startReadBuffer(int sockfd)
     int n, cnt;
     memset(buf, 0, sizeof(buf));
     while((n = recv(sockfd, buf, MSGSIZE, MSG_WAITALL)) > 0) {
-        printf("n=%d\n", n);
         handleBuffer(sockfd, buf, n);     
     }
 }
