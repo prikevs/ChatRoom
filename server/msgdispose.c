@@ -251,7 +251,7 @@ static void handleBuffer(int sockfd, char *buf, int len)
 
 // Msg handler thread
 
-static void *msgHandle_thread(void *data)
+static void msgHandle_func(void *data)
 {
     ThreadArg *args;
     args = (ThreadArg*)data;
@@ -271,7 +271,7 @@ static void *msgHandle_thread(void *data)
     return ((void *)0);
 }
 
-static pthread_t main_tid;
+// static pthread_t main_tid;
 
 void msgHandler(int status, int sockfd, char *buf, int len)
 {
@@ -280,8 +280,8 @@ void msgHandler(int status, int sockfd, char *buf, int len)
     args.status = status;
     args.sockfd = sockfd;
     args.len = len;
-    memcpy(args.buf, buf, BUFFSIZE*sizeof(char));
-    msgHandle_thread((void *)(&args)); 
+    args.buf = buf;
+    msgHandle_func((void *)(&args)); 
     // err = pthread_create(&main_tid, NULL, msgHandle_thread, (void *)(&args));
     // if (err != 0) {
     //    perror("handle message, create thread:"); 

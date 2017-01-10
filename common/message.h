@@ -5,7 +5,7 @@
 #define MAXNLEN 32
 #define MSGBODYSIZE (1<<10)
 #define MSGMINLEN (4+4)
-#define MSGSIZE (MSGBODYSIZE+4+4+MAXNLEN)
+#define MSGSIZE (MSGBODYSIZE+4+8+4+MAXNLEN)
 #define BUFFSIZE (MSGSIZE+4)
 
 // MSG_reg:  register on the server
@@ -25,8 +25,8 @@ enum MsgType{
 };
 
 typedef struct Msg {
-    int msgtype;
     uint64_t msgid;
+    int msgtype;
     uint32_t bodylen;
     uint8_t from[MAXNLEN];
     uint8_t msgbody[MSGBODYSIZE];

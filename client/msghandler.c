@@ -40,6 +40,7 @@ void handleBuffer(int sockfd, char *buf, int len)
 static int sendMsg(int sockfd, Msg *msg)
 {
     int nwrite;
+    msg->msgid = MsgId++;
     nwrite = write(sockfd, (char *)msg, sizeof(Msg));
     if (nwrite == -1) {
         perror("write error:");
@@ -53,7 +54,6 @@ int reg(int sockfd, const char *name)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_reg;
-    msg.msgid = MsgId++;
     if (genMSG_reg(msg.msgbody, &msg.bodylen, name) < 0) {
         fprintf(stderr, "Failed to gen MSG_reg.\n"); 
         return -1;
@@ -70,7 +70,6 @@ int inRoom(int sockfd, const char *room)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_in;
-    msg.msgid = MsgId++;
     if (genMSG_in(msg.msgbody, &msg.bodylen, room) < 0) {
         fprintf(stderr, "Failed to gen MSG_in.\n"); 
         return -1;
@@ -86,7 +85,6 @@ int listUsers(int sockfd) {
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_list;
-    msg.msgid = MsgId++;
     strcpy((char *)msg.msgbody, "users");
     if (sendMsg(sockfd, &msg) < 0) {
         fprintf(stderr, "Failed to send message.\n"); 
@@ -100,7 +98,6 @@ int sendMsgMsg(int sockfd, const char *smsg)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_msg;
-    msg.msgid = MsgId++;
     strncpy((char *)msg.msgbody, (char *)smsg, strlen(smsg));
     msg.bodylen = strlen(smsg) + 1;
     if (sendMsg(sockfd, &msg) < 0) {
