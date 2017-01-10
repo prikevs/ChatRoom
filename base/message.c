@@ -46,6 +46,7 @@ int handleMsg(int sockfd, uint8_t *buf, int len)
     if (len <= MSGMINLEN)
         return -1;
     msg = (Msg*)buf;
+    /*
     do {
         if (msg->msgtype == MSG_reg)
             printf("MSG_reg\n");
@@ -63,6 +64,7 @@ int handleMsg(int sockfd, uint8_t *buf, int len)
             printf("others\n"); 
         }
     } while(0);
+    */
 
     handler = findProperHandler(msg->msgtype);
     if (handler == NULL)

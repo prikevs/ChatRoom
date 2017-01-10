@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 static uint64_t MsgId;
+static uint64_t RegId;
 
 static void handleMSG_msg(int sockfd, Msg *msg)
 {
@@ -12,11 +13,41 @@ static void handleMSG_msg(int sockfd, Msg *msg)
 }
 
 static void handleMSG_ret(int sockfd, Msg *msg) {
-    printf("Ret: %s\n", msg->msgbody);
+    char hint[MSGBODYSIZE] = {0};
+    int ret = 0;
+    ret = parseMSG_ret(msg->msgbody, msg->bodylen, hint);
+    if (ret < 0) {
+        fprintf(stderr, "failed to parse ret message\n");
+    } else if (ret == 1) {
+        printf(ANSI_COLOR_GREEN "[v] success" ANSI_COLOR_RESET);
+    } else if (ret == 0) {
+        printf(ANSI_COLOR_RED "[x] failure" ANSI_COLOR_RESET);
+    }
+    if (strlen(hint) == 0) {
+        printf("\n");
+    } else {
+        printf(": %s\n", hint);
+    }
+    if (RegId == msg->msgid && ret != 1) {
+        fprintf(stderr, "failed to register. exit");
+        exit(1);
+    }
 }
 
 static void handleMSG_list(int sockfd, Msg *msg) {
-    printf("List: %s\n", msg->msgbody);
+    LinkedList *list = NULL;
+    const ListNode *node;
+    int cnt = 0;
+
+    list = parseMSG_list(msg->msgbody, msg->bodylen);
+    node = list->head;
+    printf("------------\n");
+    printf("List:\n");
+    while(node != NULL) {
+        printf("%d: %s\n", cnt++, ((User *)(node->data))->name);
+        node = node->next;
+    }
+    printf("------------\n");
 }
 
 int registHandleFuncs()
@@ -62,6 +93,7 @@ int reg(int sockfd, const char *name)
         fprintf(stderr, "Failed to send message.\n"); 
         return -1; 
     }
+    RegId = msg.msgid;
     return 0;
 }
 

@@ -267,8 +267,7 @@ static void msgHandle_func(void *data)
             break;
         }
     } while(0);
-    printf("%s\n", args->buf);
-    return ((void *)0);
+    // printf("%s\n", args->buf);
 }
 
 // static pthread_t main_tid;

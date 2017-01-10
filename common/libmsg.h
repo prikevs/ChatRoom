@@ -18,5 +18,6 @@ int genMSG_in(uint8_t*, uint32_t*, const char*);
 int parseMSG_reg(const uint8_t*, uint32_t, char*, uint32_t*);
 int genMSG_reg(uint8_t*, uint32_t*, const char*);
 int genMSG_ret(uint8_t*, uint32_t*, int, const char*);
+int parseMSG_ret(uint8_t *, uint32_t , char *);
 
 #endif

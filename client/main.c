@@ -30,19 +30,24 @@ void chat(const char *msg) {
 
 void cmdline() {
     int ch;
-    char room[MAXNLEN], msg[MAXNLEN];
+    char room[MAXNLEN], msg[MSGBODYSIZE];
     while (1) {
-        printf("1.in session\n2.chat\n");
+        printf("***************\n");
+        printf("1.session\n2.chat\n3.list\n");
+        printf("***************\n");
+        printf("your choice:\n");
         scanf("%d", &ch);
         switch(ch) {
         case 1:
-            printf("room name:");
+            printf("session:");
             scanf("%s", room);
             in_room(room);
             break;
         case 2:
+            getchar();
             printf("chat:");
-            scanf("%s", msg);
+            fgets(msg, MSGBODYSIZE-1, stdin);
+            msg[strlen(msg)-1] = 0;
             chat(msg);
             break;
         case 3:
@@ -66,6 +71,8 @@ int init(const char *ip, int port) {
 
 void start() {
     char name[MAXNLEN];
+    int child_status;
+
     printf("Input your name: ");
     scanf("%s", name);
     if (reg(sockfd, name) < 0) {
@@ -78,9 +85,9 @@ void start() {
         return;
     }
     if (pid == 0) {
-        cmdline();
-    } else {
         startReadBuffer(sockfd);
+    } else {
+        cmdline();
     }
 }
 
