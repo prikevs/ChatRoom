@@ -22,8 +22,6 @@ int initSessionList()
         if (sessionlist == NULL)
             return -2;
     }
-    if (pthread_mutex_init(&lock, NULL) != 0)
-        return -1;
     return 0;
 }
 

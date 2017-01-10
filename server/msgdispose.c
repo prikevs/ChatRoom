@@ -172,14 +172,14 @@ static void handleMSG_out(int sockfd, Msg *msg)
 
 static void handleMSG_list(int sockfd, Msg *msg)
 {
-    char SESSIONS[] = "sessions";
-    char USERS[] = "users";
+    char SESSIONS[MAXNLEN] = "sessions";
+    char USERS[MAXNLEN] = "users";
     char sename[MAXNLEN];
     char name[MAXNLEN];
     LinkedList *list = NULL;
     if (strncmp(SESSIONS, msg->msgbody, strlen(SESSIONS)) == 0) {
-            
-    } else if (strncmp(USERS, msg->msgbody, strlen(USERS) == 0)) {
+        printf("in sessions\n"); 
+    } else if (strncmp(USERS, msg->msgbody, strlen(USERS)) == 0) {
         if (getClientNameBySockfd(sockfd, name) < 0 || strlen(name) == 0) {
             sendMsgRetFailed(sockfd, "You have not registered");
             return;
@@ -189,7 +189,7 @@ static void handleMSG_list(int sockfd, Msg *msg)
             return;
         }
         list = getUsersFromSession(sename);
-        if (if list == NULL) {
+        if (list == NULL) {
             sendMsgRetFailed(sockfd, "failed to get users from session"); 
             return;
         }
