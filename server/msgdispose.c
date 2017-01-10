@@ -170,6 +170,38 @@ static void handleMSG_out(int sockfd, Msg *msg)
     sendMsgRetSuccess(sockfd, NULL);
 }
 
+static void handleMSG_list(int sockfd, Msg *msg)
+{
+    char SESSIONS[] = "sessions";
+    char USERS[] = "users";
+    char sename[MAXNLEN];
+    char name[MAXNLEN];
+    LinkedList *list = NULL;
+    if (strncmp(SESSIONS, msg->msgbody, strlen(SESSIONS)) == 0) {
+            
+    } else if strncmp(USERS, msg->msgbody, strlen(USERS) == 0) {
+        if (getClientNameBySockfd(sockfd, name) < 0 || strlen(name) == 0) {
+            sendMsgRetFailed(sockfd, "You have not registered");
+            return;
+        }
+        if (getClientSessionName(name, sename) != 0 || strlen(sename) == 0) {
+            sendMsgRetFailed(sockfd, "You are not in any session."); 
+            return;
+        }
+        list = getUsersFromSession(sename);
+        if (if list == NULL) {
+            sendMsgRetFailed(sockfd, "failed to get users from session"); 
+            return;
+        }
+        if (genMSG_list(msg->msgbody, &msg->bodylen, list) < 0) {
+            sendMsgRetFailed(sockfd, "failed to generate message by clients list"); 
+            return;
+        }
+    }
+    sendMsg(sockfd, msg);
+}
+
+
 static void handleMSG_msg(int sockfd, Msg *msg)
 {
     char sename[MAXNLEN];
@@ -193,11 +225,6 @@ static void handleMSG_msg(int sockfd, Msg *msg)
     sendMsgMsg(msg, name, list);
 
     destroyClientListInSession(list); 
-}
-
-static void handleMSG_list(int sockfd, Msg *msg)
-{
-
 }
 
 int registHandleFuncs()

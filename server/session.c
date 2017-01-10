@@ -6,11 +6,13 @@
 #include "common.h"
 #include "session.h"
 
-#define ENTRY() pthread_mutex_lock(&lock)
-#define EXIT(ret) pthread_mutex_unlock(&lock); return ret
+// #define ENTRY() pthread_mutex_lock(&lock)
+// #define EXIT(ret) pthread_mutex_unlock(&lock); return ret
+#define ENTRY()
+#define EXIT(ret) return ret
 
 static LinkedList *sessionlist;
-static pthread_mutex_t lock;
+// static pthread_mutex_t lock;
 
 // 初始化Sesion列表
 int initSessionList()
@@ -23,6 +25,10 @@ int initSessionList()
     if (pthread_mutex_init(&lock, NULL) != 0)
         return -1;
     return 0;
+}
+
+LinkedList *getSessionList() {
+    return sessionlist;
 }
 
 // 根据session名查找某个session节点
