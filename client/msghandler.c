@@ -13,11 +13,17 @@ static void handleMSG_ret(int sockfd, Msg *msg) {
     printf("Ret: %s\n", msg->msgbody);
 }
 
+static void handleMSG_list(int sockfd, Msg *msg) {
+    printf("List: %s\n", msg->msgbody);
+}
+
 int registHandleFuncs()
 {
     if (registHandleFunc(MSG_msg, handleMSG_msg, 0) != 0)
         return -1;
     if (registHandleFunc(MSG_ret, handleMSG_ret, 0) != 0)
+        return -1;
+    if (registHandleFunc(MSG_list, handleMSG_list, 0) != 0)
         return -1;
     return 0;
 }
@@ -63,6 +69,18 @@ int inRoom(int sockfd, const char *room)
         fprintf(stderr, "Failed to gen MSG_in.\n"); 
         return -1;
     }
+    if (sendMsg(sockfd, &msg) < 0) {
+        fprintf(stderr, "Failed to send message.\n"); 
+        return -1; 
+    }
+    return 0;
+}
+
+int listUsers(int sockfd) {
+    Msg msg;
+    memset(&msg, 0, sizeof(Msg));
+    msg.msgtype = MSG_list;
+    strcpy((char *)msg.msgbody, "users");
     if (sendMsg(sockfd, &msg) < 0) {
         fprintf(stderr, "Failed to send message.\n"); 
         return -1; 
