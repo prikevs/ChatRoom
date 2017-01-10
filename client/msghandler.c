@@ -9,7 +9,7 @@ static uint64_t RegId;
 
 static void handleMSG_msg(int sockfd, Msg *msg)
 {
-    printf("From %s: %s\n", msg->from, msg->msgbody);
+    printf(ANSI_COLOR_YELLOW "From " ANSI_COLOR_CYAN "%s" ANSI_COLOR_RESET " : %s\n",msg->from, msg->msgbody);
 }
 
 static void handleMSG_ret(int sockfd, Msg *msg) {
