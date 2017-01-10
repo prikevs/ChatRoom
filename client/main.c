@@ -14,6 +14,12 @@ void in_room(const char *room) {
     }
 }
 
+void list_users() {
+    if (listUsers(sockfd) < 0) {
+        fprintf(stderr, "Failed to list users.\n");
+    }
+}
+
 void chat(const char *msg) {
     if (sendMsgMsg(sockfd, msg) < 0) {
         fprintf(stderr, "Failed to send room.\n");
@@ -37,6 +43,9 @@ void cmdline() {
             printf("chat:");
             scanf("%s", msg);
             chat(msg);
+            break;
+        case 3:
+            list_users();
             break;
         }
     }
