@@ -179,7 +179,7 @@ static void handleMSG_list(int sockfd, Msg *msg)
     LinkedList *list = NULL;
     if (strncmp(SESSIONS, msg->msgbody, strlen(SESSIONS)) == 0) {
             
-    } else if strncmp(USERS, msg->msgbody, strlen(USERS) == 0) {
+    } else if (strncmp(USERS, msg->msgbody, strlen(USERS) == 0)) {
         if (getClientNameBySockfd(sockfd, name) < 0 || strlen(name) == 0) {
             sendMsgRetFailed(sockfd, "You have not registered");
             return;
