@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+static uint64_t MsgId;
+
 static void handleMSG_msg(int sockfd, Msg *msg)
 {
     printf("From %s: %s\n", msg->from, msg->msgbody);
@@ -19,6 +21,8 @@ static void handleMSG_list(int sockfd, Msg *msg) {
 
 int registHandleFuncs()
 {
+    // init message id
+    MsgId = rand();
     if (registHandleFunc(MSG_msg, handleMSG_msg, 0) != 0)
         return -1;
     if (registHandleFunc(MSG_ret, handleMSG_ret, 0) != 0)
@@ -49,6 +53,7 @@ int reg(int sockfd, const char *name)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_reg;
+    msg.msgid = MsgId++;
     if (genMSG_reg(msg.msgbody, &msg.bodylen, name) < 0) {
         fprintf(stderr, "Failed to gen MSG_reg.\n"); 
         return -1;
@@ -65,6 +70,7 @@ int inRoom(int sockfd, const char *room)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_in;
+    msg.msgid = MsgId++;
     if (genMSG_in(msg.msgbody, &msg.bodylen, room) < 0) {
         fprintf(stderr, "Failed to gen MSG_in.\n"); 
         return -1;
@@ -80,6 +86,7 @@ int listUsers(int sockfd) {
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_list;
+    msg.msgid = MsgId++;
     strcpy((char *)msg.msgbody, "users");
     if (sendMsg(sockfd, &msg) < 0) {
         fprintf(stderr, "Failed to send message.\n"); 
@@ -93,6 +100,7 @@ int sendMsgMsg(int sockfd, const char *smsg)
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_msg;
+    msg.msgid = MsgId++;
     strncpy((char *)msg.msgbody, (char *)smsg, strlen(smsg));
     msg.bodylen = strlen(smsg) + 1;
     if (sendMsg(sockfd, &msg) < 0) {

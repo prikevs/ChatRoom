@@ -26,6 +26,7 @@ enum MsgType{
 
 typedef struct Msg {
     int msgtype;
+    uint64_t msgid;
     uint32_t bodylen;
     uint8_t from[MAXNLEN];
     uint8_t msgbody[MSGBODYSIZE];

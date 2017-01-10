@@ -4,6 +4,7 @@
 #include "common.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 
 int sockfd;
@@ -29,7 +30,7 @@ void chat(const char *msg) {
 
 void cmdline() {
     int ch;
-    char room[128], msg[128];
+    char room[MAXNLEN], msg[MAXNLEN];
     while (1) {
         printf("1.in session\n2.chat\n");
         scanf("%d", &ch);
@@ -53,6 +54,7 @@ void cmdline() {
 
 
 int init(const char *ip, int port) {
+    srand(time(NULL));
     if (registHandleFuncs() < 0)
         return -1;
     sockfd = initNetwork(ip, port);

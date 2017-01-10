@@ -90,20 +90,22 @@ int sendMsg(int sockfd, Msg *msg)
     return 0;
 }
 
-int sendMsgRetSuccess(int sockfd, const char *hint)
+int sendMsgRetSuccess(int sockfd, uint64_t msgid, const char *hint)
 {
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_ret;
+    msg.msgid = msgid;
     genMSG_ret(msg.msgbody, &msg.bodylen, 1, hint);
     return sendMsg(sockfd, &msg);
 }
 
-int sendMsgRetFailed(int sockfd, const char *error)
+int sendMsgRetFailed(int sockfd, uint64_t msgid, const char *error)
 {
     Msg msg;
     memset(&msg, 0, sizeof(Msg));
     msg.msgtype = MSG_ret;
+    msg.msgid = msgid;
     genMSG_ret(msg.msgbody, &msg.bodylen, 0, error);
     return sendMsg(sockfd, &msg);
 }
@@ -133,14 +135,14 @@ static void handleMSG_reg(int sockfd, Msg *msg)
 
     memset(name, 0, sizeof(name));
     if (parseMSG_reg(msg->msgbody, msg->bodylen, name, (uint32_t*)&len) != 0) {
-        sendMsgRetFailed(sockfd, "Reg user name illegal.");
+        sendMsgRetFailed(sockfd, msg->msgid, "Reg user name illegal.");
         return;
     }
     if (reg(name, sockfd) == -1) {
-        sendMsgRetFailed(sockfd, "User name already exists.");
+        sendMsgRetFailed(sockfd, msg->msgid, "User name already exists.");
         return;
     }
-    sendMsgRetSuccess(sockfd, NULL);
+    sendMsgRetSuccess(sockfd, msg->msgid, NULL);
     dumpClientList();
 }
 
@@ -150,24 +152,24 @@ static void handleMSG_in(int sockfd, Msg *msg)
     int len;
     memset(session, 0, sizeof(session));
     if (parseMSG_in(msg->msgbody, msg->bodylen, session, (uint32_t*)&len) != 0) {
-        sendMsgRetFailed(sockfd, "Session name illegal.");
+        sendMsgRetFailed(sockfd, msg->msgid, "Session name illegal.");
         return;
     }
     if (getIntoRoomBySockfd(sockfd, session) != 0) {
-        sendMsgRetFailed(sockfd, "Failed to get into room");
+        sendMsgRetFailed(sockfd, msg->msgid, "Failed to get into room");
         return;
     }
-    sendMsgRetSuccess(sockfd, NULL);
+    sendMsgRetSuccess(sockfd, msg->msgid, NULL);
     dumpSessionList();
 }
 
 static void handleMSG_out(int sockfd, Msg *msg)
 {
     if (outOfRoomBySockfd(sockfd) != 0) {
-        sendMsgRetFailed(sockfd, "Server Error");
+        sendMsgRetFailed(sockfd, msg->msgid, "Server Error");
         return;
     }
-    sendMsgRetSuccess(sockfd, NULL);
+    sendMsgRetSuccess(sockfd, msg->msgid, NULL);
 }
 
 static void handleMSG_list(int sockfd, Msg *msg)
@@ -181,20 +183,20 @@ static void handleMSG_list(int sockfd, Msg *msg)
         printf("in sessions\n"); 
     } else if (strncmp(USERS, msg->msgbody, strlen(USERS)) == 0) {
         if (getClientNameBySockfd(sockfd, name) < 0 || strlen(name) == 0) {
-            sendMsgRetFailed(sockfd, "You have not registered");
+            sendMsgRetFailed(sockfd, msg->msgid, "You have not registered");
             return;
         }
         if (getClientSessionName(name, sename) != 0 || strlen(sename) == 0) {
-            sendMsgRetFailed(sockfd, "You are not in any session."); 
+            sendMsgRetFailed(sockfd, msg->msgid, "You are not in any session."); 
             return;
         }
         list = getUsersFromSession(sename);
         if (list == NULL) {
-            sendMsgRetFailed(sockfd, "failed to get users from session"); 
+            sendMsgRetFailed(sockfd, msg->msgid, "failed to get users from session"); 
             return;
         }
         if (genMSG_list(msg->msgbody, &msg->bodylen, list) < 0) {
-            sendMsgRetFailed(sockfd, "failed to generate message by clients list"); 
+            sendMsgRetFailed(sockfd, msg->msgid, "failed to generate message by clients list"); 
             return;
         }
     }
@@ -209,17 +211,17 @@ static void handleMSG_msg(int sockfd, Msg *msg)
     LinkedList *list;
 
     if (getClientNameBySockfd(sockfd, name) < 0 || strlen(name) == 0) {
-        sendMsgRetFailed(sockfd, "You have not registered");
+        sendMsgRetFailed(sockfd, msg->msgid, "You have not registered");
         return;
     }
     memset(sename, 0, sizeof(sename));
     if (getClientSessionName(name, sename) != 0 || strlen(sename) == 0) {
-        sendMsgRetFailed(sockfd, "You are not in any session."); 
+        sendMsgRetFailed(sockfd, msg->msgid, "You are not in any session."); 
         return;
     }
     list = getUsersFromSession(sename); 
     if (list == NULL) {
-        sendMsgRetFailed(sockfd, "You are not in any session."); 
+        sendMsgRetFailed(sockfd, msg->msgid, "You are not in any session."); 
         return;
     }
     sendMsgMsg(msg, name, list);
